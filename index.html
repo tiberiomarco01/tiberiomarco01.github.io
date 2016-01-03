@@ -1,6 +1,171 @@
 <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
-<script src="https://gist.github.com/anonymous/bcdec7141a320ed9b7ec.js"></script>
 
 <form>
   <input type="text" placeholder="Search" name="search" />
 </form>
+
+<script>
+  var PARTICLE_STRINGS = [
+  '*',
+  '*',
+];
+
+var PARTICLE_STRINGS_LENGTH = PARTICLE_STRINGS.length;
+function getRandomString() {
+  return PARTICLE_STRINGS[Math.floor(Math.random() * PARTICLE_STRINGS_LENGTH)];
+}
+
+var PARTICLE_COLORS = [
+  '#000000'
+];
+
+var PARTICLE_COLORS_LENGTH = PARTICLE_COLORS.length;
+function getRandomColor() {
+  return PARTICLE_COLORS[Math.floor(Math.random() * PARTICLE_COLORS_LENGTH)];
+}
+
+var PARTICLE_COLORS_LENGTH = PARTICLE_COLORS.length;
+function getRandomColor() {
+  return PARTICLE_COLORS[Math.floor(Math.random() * PARTICLE_COLORS_LENGTH)];
+}
+
+var PARTICLE_STRINGS_LENGTH = PARTICLE_STRINGS.length;
+function getRandomString() {
+  return PARTICLE_STRINGS[Math.floor(Math.random() * PARTICLE_STRINGS_LENGTH)];
+}
+
+// Create a program for each string
+var PROGRAM_STRINGS = PARTICLE_STRINGS.map(function(text) {
+  return function programString(context, color) {
+    context.font = '14px sans-serif';
+    var metrics = context.measureText(text);
+    var textWidth = metrics.width;
+    context.fillStyle = color;
+    context.fillText(text, 0, 0);
+  };
+});
+
+var PROGRAM_STRINGS_LENGTH = PROGRAM_STRINGS.length;
+function getRandomProgramString() {
+  return PROGRAM_STRINGS[Math.floor(Math.random() & PROGRAM_STRINGS_LENGTH)];
+}
+
+var particles = [];
+
+var windowWidth = window.innerWidth;
+var windowHeight = window.innerHeight;
+var container;
+var camera, scene, renderer;
+
+var PI2 = Math.PI * 2;
+
+function resetParticle(particle, initial) {
+  particle.position.x = windowWidth * (Math.random() - 0.5);
+  if (initial) {
+    particle.position.y = windowHeight * (Math.random() - 1.5);
+  } else {
+    particle.position.y = windowHeight * (-0.5) - 10;
+  }
+}
+
+function updateParticles() {
+  particles.forEach(updateParticle);
+}
+
+function updateParticle(particle) {
+  particle.position.x += 0;
+  particle.position.y += 1;
+  if (particle.position.y > 0.5 * windowHeight) {
+    resetParticle(particle)
+  }
+}
+
+function getOrthographicCameraProperties() {
+  var halfWidth = 0.5 * windowWidth;
+  var halfHeight = 0.5 * window.innerHeight
+
+  return {
+    left: -0.5 * windowWidth,
+    right: 0.5 * windowWidth,
+    top: -0.5 * windowHeight,
+    bottom: 0.5 * windowHeight,
+    near: 1,
+    far: 1000,
+  }
+}
+
+function init() {
+  container = document.createElement('div');
+  document.body.appendChild(container);
+
+  var cameraProperties = getOrthographicCameraProperties();
+  camera = new THREE.OrthographicCamera(cameraProperties.left, cameraProperties.right, cameraProperties.top, cameraProperties.bottom, cameraProperties.near, cameraProperties.far);
+  camera.position.set(0, 0, 1000);
+
+  scene = new THREE.Scene();
+
+  for (var i = 0; i < 100; i++) {
+
+    var particle = new THREE.Sprite(new THREE.SpriteCanvasMaterial({
+      color: getRandomColor(),
+      program: getRandomProgramString(),
+      rotation: 180,
+    }));
+
+    particle.scale.y = -1;
+
+    resetParticle(particle, true);
+    particle.position.y = windowHeight * (Math.random() - 0.5);
+
+    scene.add(particle);
+
+    particles.push(particle);
+  }
+
+  //
+
+  renderer = new THREE.CanvasRenderer();
+  renderer.setClearColor(0xf0f0f0);
+  renderer.setPixelRatio(window.devicePixelRatio);
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  container.appendChild(renderer.domElement);
+
+  //
+
+  window.addEventListener('resize', onWindowResize, false);
+
+}
+
+function onWindowResize() {
+  windowWidth = window.innerWidth;
+  windowHeight = window.innerHeight;
+
+  var cameraProperties = getOrthographicCameraProperties();
+  camera.left = cameraProperties.left;
+  camera.right = cameraProperties.right;
+  camera.top = cameraProperties.top;
+  camera.bottom = cameraProperties.bottom;
+
+  camera.updateProjectionMatrix();
+
+  renderer.setSize(window.innerWidth, window.innerHeight);
+}
+
+//
+
+function animate() {
+  requestAnimationFrame(animate);
+  render();
+  updateParticles();
+}
+
+function render() {
+  camera.updateMatrixWorld();
+  renderer.render(scene, camera);
+}
+
+// Kick everything off
+init();
+animate();
+
+</script>
