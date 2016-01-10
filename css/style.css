@@ -1,0 +1,12 @@
+html,body{
+  font-family:sans-serif;
+  background-color:#white;
+}
+#output{
+  /* The command I know best. */
+  text-transform:uppercase;
+  color:#black;
+  font-size:6em;
+  font-weight:bold;
+  text-align:left;
+}
