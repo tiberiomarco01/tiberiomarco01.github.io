@@ -1,0 +1,141 @@
+// Carousel option
+$carouselWidth: 100%;
+$carouselHeight: 100%;
+$vertical: false;
+$speed: .4s;
+$easing: cubic-bezier(0.19, 1, 0.22, 1);
+
+
+// Slides option
+$slides: (#ED4D9B, #16A58D, #D7BB5B, #B84239, #F2F5F2);
+$nbrItem: length($slides);
+
+
+html, body {
+  height:100%;
+}
+
+
+.carousel {
+    width: $carouselWidth;
+    height: $carouselHeight;
+    overflow: hidden;
+}
+
+
+.wrap-slides {
+    width: $carouselWidth * $nbrItem; 
+    height: $carouselHeight;
+    position: relative;
+    padding-top: 10px;
+
+    .slide {
+        width: $carouselWidth / $nbrItem;
+        height: $carouselHeight;
+        position: absolute;
+        top:0; left: 0;
+        z-index:1;
+        transition:all $speed $easing;
+
+        color:#fff;
+        font-family:Helvetica;
+        font-weight: lighter;
+        font-size: 20px;
+        text-align: center;
+        line-height: 100vh;
+
+        @if $vertical == false {
+            transform:translateX($carouselWidth * -1);
+        } @else {
+            transform:translateY($carouselHeight * -1);
+        }
+
+        @for $i from 1 through $nbrItem {
+            &:nth-of-type(#{$i}) {
+                background:nth($slides, $i);
+            }
+        }
+        
+        & > div {
+          display: inline-block;
+          vertical-align: middle;
+          line-height: 1.2;
+          font-size: 0.8em;
+          h1 {
+            font-size: 2em;
+            margin-bottom:50px;
+            font-weight: 900;
+            text-transform: uppercase;
+          }
+          span {
+            display: block;
+            font-size: 0.8em;
+            opacity: 0.6;
+          }
+        }
+      
+    }
+
+
+    // All the navigation
+
+    input {
+        display: block;
+        position: relative;
+        z-index:10;
+        width: 10px; height:10px;
+        float: left;
+        margin: 0 0 0 10px;
+
+        border:none;
+        background:black;
+        border-radius:100%;
+        outline:none;
+        -webkit-appearance:none;
+        opacity:0.3;
+        transition:all $speed $easing;
+
+        cursor:pointer;
+
+        &:checked {
+            opacity:1;
+
+            @for $i from 1 through $nbrItem {
+                &:nth-of-type(#{$i}) ~ div:nth-of-type(#{$i}) {
+                    z-index:3;
+                    @if $vertical == false {
+                        transform:translateX(0);
+                    } @else {
+                        transform:translateY(0);
+                    }
+                }
+            }
+
+            @for $i from 1 through $nbrItem {
+                &:nth-of-type(#{$i}) ~ div:nth-of-type(#{$i}) ~ div {
+                    @if $vertical == false {
+                        transform:translateX($carouselWidth);
+                    } @else {
+                        transform:translateY($carouselHeight);
+                    }
+                }
+            }
+
+            &:nth-of-type(#{$nbrItem}) ~ div:first-of-type {
+                @if $vertical == false {
+                    transform:translateX($carouselWidth) !important;
+                } @else {
+                    transform:translateY($carouselHeight) !important;
+                }
+            }
+
+            &:first-of-type ~ div:nth-of-type(#{$nbrItem}) {
+                @if $vertical == false {
+                    transform:translateX($carouselWidth * -1) !important;
+                } @else {
+                    transform:translateY($carouselHeight * -1) !important;
+                }
+            }
+        }
+    }
+}
